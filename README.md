@@ -32,12 +32,17 @@
   </a>
 </p>
 
+<p align="center">
+  <img src="assets/demo.gif" alt="Self-Healing Pipeline Live Demo Animation" width="92%" style="border-radius: 10px;" />
+</p>
+
 </div>
 
 ---
 
 ## 📑 Table of Contents
 
+- [🎬 Live Demo Video](#-live-demo-video)
 - [🎯 Executive Summary](#-executive-summary)
 - [✨ Key Features](#-features)
 - [🏗️ System Architecture](#-architecture)
@@ -57,6 +62,16 @@
 - [🔐 Environment Variables](#-environment-variables)
 - [🐍 Contribution Activity](#-contribution-activity)
 - [❓ Frequently Asked Questions](#-faq)
+
+---
+
+## 🎬 Live Demo Video
+
+Watch the autonomous agent catch upstream currency formatting violations (`$100.50`), perform real-time **Grok (xAI)** reasoning, auto-apply a `cast_type` repair, and load 100% compliant data into the **DuckDB** analytics warehouse:
+
+<div align="center">
+  <img src="assets/demo.gif" alt="Self-Healing Pipeline Live Demo" width="95%" />
+</div>
 
 ---
 
