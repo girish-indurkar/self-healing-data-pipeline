@@ -344,21 +344,19 @@ GROK_MODEL=grok-3
 
 ---
 
-### 4. Running the Project
+### 4. Running the Project (Instant Launchers)
 
-Choose your preferred interface:
+We provide auto-detecting one-click launchers that find your virtual environment automatically from any folder:
 
-#### Option A: Conversational Terminal CLI
-```powershell
-python -m self_healing_pipeline.interactive
-# Try typing: "hi dataset" -> "tests/fixtures/dirty_types.csv" -> "datapipeline"
-```
+| Interface | Command (Any OS) | Windows Instant Launcher | Description |
+| :--- | :--- | :---: | :--- |
+| 💬 **Conversational CLI** | `python run_cli.py` | Double-click `run_cli.bat` | Starts the interactive agent terminal |
+| 🌐 **Streamlit Web Dashboard** | `python run_ui.py` | Double-click `run_ui.bat` | Launches **http://localhost:8501** in browser |
 
-#### Option B: Real-Time Streamlit Web Dashboard
-```powershell
-streamlit run app.py
-```
-Open **[http://localhost:8501](http://localhost:8501)** in your browser to simulate pipeline errors, inspect DuckDB records, and watch live self-healing.
+#### Or run manually:
+
+- **Terminal CLI:** `python -m self_healing_pipeline.interactive` (or `python interactive.py`)
+- **Web Dashboard:** `streamlit run app.py`
 
 ---
 
