@@ -381,7 +381,7 @@ PYTHONPATH=. pytest tests/ -v
 
 Expected output:
 ```text
-============================= 31 passed in 4.15s ==============================
+ 31 passed in 4.15s
 ```
 
 ---
