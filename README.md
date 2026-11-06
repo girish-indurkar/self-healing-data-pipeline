@@ -35,16 +35,32 @@
   </a>
 </p>
 
-<p align="center">
-  <a href="#-quick-start"><strong>🚀 Quick Start</strong></a> •
-  <a href="#-architecture"><strong>🏗️ Architecture</strong></a> •
-  <a href="#-interactive-cli"><strong>💬 Conversational CLI</strong></a> •
-  <a href="#-features"><strong>✨ Features</strong></a> •
-  <a href="#-tech-stack"><strong>🛠️ Tech Stack</strong></a> •
-  <a href="#-faq"><strong>❓ FAQ</strong></a>
-</p>
-
 </div>
+
+---
+
+## 📑 Table of Contents
+
+- [🎯 Executive Summary](#-executive-summary)
+- [✨ Key Features](#-features)
+- [🏗️ System Architecture](#-architecture)
+- [💬 Conversational CLI Experience](#-conversational-cli-experience)
+  - [CLI Command Cheat-Sheet](#cli-command-cheat-sheet)
+  - [Live Terminal Session Demonstration](#live-terminal-session-demonstration)
+- [🛠️ Supported Self-Healing Actions](#-supported-self-healing-actions)
+- [🛠️ Tech Stack](#-tech-stack)
+- [⚡ Quick Setup](#-quick-setup)
+  - [Prerequisites](#1-prerequisites)
+  - [One-Command Setup (Windows & macOS/Linux)](#2-installation--virtual-environment)
+  - [API Configuration](#3-configure-grok-xai-api-optional)
+  - [Running the Project](#4-running-the-project)
+  - [Verifying with Tests](#5-running-tests)
+- [🐳 Docker Deployment](#-docker-deployment)
+- [📁 Project Directory Structure](#-project-directory-structure)
+- [🔐 Environment Variables](#-environment-variables)
+- [🐍 Contribution Activity](#-contribution-activity)
+- [❓ Frequently Asked Questions](#-faq)
+- [📄 License](#-license)
 
 ---
 
@@ -97,66 +113,83 @@ The **Self-Healing Data Pipeline** introduces an autonomous reliability agent th
 
 ## 🏗️ Architecture
 
+The pipeline processes data through a horizontal assembly line: **Ingestion &rarr; Validation Gate &rarr; Cognitive Engine &rarr; Safety Guardrails &rarr; Storage**.
+
 ```mermaid
-flowchart TD
-    subgraph INGESTION ["📥 Ingestion & Interface Layer"]
-        CLI["💬 Conversational CLI<br/>('hi dataset' / 'datapipeline')"]
-        UI["📊 Streamlit Web Dashboard<br/>(Failure Injector & Metrics)"]
-        CSV["📄 Upstream Data Batch<br/>(orders.csv)"]
+flowchart LR
+    subgraph INGESTION ["📥 Ingestion Layer"]
+        CLI["💬 Terminal CLI<br/>('hi dataset' / 'datapipeline')"]
+        UI["📊 Streamlit Web UI<br/>(Metrics & Injector)"]
+        CSV["📄 Upstream CSV<br/>(orders.csv)"]
     end
 
-    subgraph QUALITY_GATE ["🔍 Data Quality & Validation Engine"]
-        VAL{"⚖️ Schema & Type Validator"}
-        ERR["⚠️ Structured Pipeline Error<br/>(Type / Schema / Null / Duplicate)"]
+    subgraph VALIDATION ["🔍 Quality Gate"]
+        VAL{"⚖️ Schema & Type<br/>Validator"}
+        ERR["⚠️ Structured Error<br/>(Schema / Type / Null / Dup)"]
     end
 
-    subgraph COGNITIVE_LAYER ["🧠 Cognitive Diagnosis Layer"]
+    subgraph COGNITIVE ["🧠 Cognitive Engine"]
         AGENT["🤖 Diagnosis Agent"]
         GROK["⚡ Grok (xAI) LLM<br/>(api.x.ai/v1)"]
-        RULES["📏 Deterministic Rule Engine<br/>(Zero-API Fallback)"]
+        RULES["📏 Deterministic Rules<br/>(Zero-API Fallback)"]
     end
 
-    subgraph SAFETY_GATE ["🛡️ Policy & Safety Controller"]
-        GATE{"Is Action Safe?"}
-        AUTO["✅ Safe Actions<br/>(rename_column, cast_type, drop_duplicates)"]
-        HUMAN["👤 Human Approval Gate<br/>(fill_nulls, drop_null_rows, escalate)"]
+    subgraph SAFETY ["🛡️ Safety Gate"]
+        GATE{"Action Policy"}
+        AUTO["✅ Auto-Apply Fix<br/>(rename, cast, dedup)"]
+        HUMAN["👤 Human Approval<br/>(nulls, drops, escalate)"]
     end
 
-    subgraph EXECUTION ["⚙️ Transformation & Storage Layer"]
-        FIX["🛠️ Fix Applicator Engine"]
+    subgraph STORAGE ["⚙️ Storage & Warehouse"]
+        FIX["🛠️ Fix Applicator"]
         WAREHOUSE[("⚡ DuckDB Warehouse<br/>(warehouse.orders)")]
-        LOGS[("📝 JSONL Incident Ledger<br/>(logs/incidents.jsonl)")]
+        LOGS[("📝 Audit Ledger<br/>(incidents.jsonl)")]
     end
 
     CLI --> CSV
     UI --> CSV
     CSV --> VAL
-    VAL -- "Valid Data" --> WAREHOUSE
-    VAL -- "Violations Found" --> ERR
+    VAL -- "Clean Data" --> WAREHOUSE
+    VAL -- "Violations" --> ERR
     ERR --> AGENT
     AGENT --> GROK
     AGENT -.->|Fallback| RULES
     GROK --> GATE
     RULES --> GATE
-    GATE -- "Safe" --> AUTO
-    GATE -- "Risky" --> HUMAN
+    GATE -- "Safe Action" --> AUTO
+    GATE -- "Risky Action" --> HUMAN
     AUTO --> FIX
     HUMAN -- "Approved" --> FIX
     FIX --> VAL
     FIX --> LOGS
 
     style INGESTION fill:#1E293B,stroke:#38BDF8,stroke-width:2px,color:#F8FAFC
-    style QUALITY_GATE fill:#1E293B,stroke:#F59E0B,stroke-width:2px,color:#F8FAFC
-    style COGNITIVE_LAYER fill:#1E293B,stroke:#818CF8,stroke-width:2px,color:#F8FAFC
-    style SAFETY_GATE fill:#1E293B,stroke:#10B981,stroke-width:2px,color:#F8FAFC
-    style EXECUTION fill:#1E293B,stroke:#EC4899,stroke-width:2px,color:#F8FAFC
+    style VALIDATION fill:#1E293B,stroke:#F59E0B,stroke-width:2px,color:#F8FAFC
+    style COGNITIVE fill:#1E293B,stroke:#818CF8,stroke-width:2px,color:#F8FAFC
+    style SAFETY fill:#1E293B,stroke:#10B981,stroke-width:2px,color:#F8FAFC
+    style STORAGE fill:#1E293B,stroke:#EC4899,stroke-width:2px,color:#F8FAFC
 ```
 
 ---
 
 ## 💬 Conversational CLI Experience
 
-The pipeline includes a conversational terminal assistant powered by `rich`. You can interact naturally using phrases like **`"hi dataset"`** or **`"datapipeline"`**:
+The pipeline provides a conversational terminal assistant powered by `rich`. Instead of memorizing cryptic flags, interact conversationally using everyday language.
+
+### CLI Command Cheat-Sheet
+
+| Phrase / Keyword | Action Triggered | Example Usage |
+| :--- | :--- | :--- |
+| **`hi dataset`** or **`load`** | Greets user, prompts for CSV file path, loads data, and prints a formatted 5-row preview | `🔧 Pipeline Agent: hi dataset` |
+| **`datapipeline`** or **`heal`** | Launches the autonomous self-healing loop (Validate &rarr; Diagnose &rarr; Fix &rarr; Re-validate) | `🔧 Pipeline Agent: datapipeline` |
+| **`schema`** | Renders expected target constraints (types, nullability, uniqueness) in a colorized table | `🔧 Pipeline Agent: schema` |
+| **`status`** or **`report`** | Displays a structured summary card of the last executed healing session | `🔧 Pipeline Agent: report` |
+| **`help`** | Prints interactive command reference and helpful pro-tips | `🔧 Pipeline Agent: help` |
+| **`exit`** or **`quit`** | Gracefully terminates the REPL session | `🔧 Pipeline Agent: exit` |
+
+---
+
+### Live Terminal Session Demonstration
 
 ```text
 ╔═══════════════════════════════════════════════════════════════╗
@@ -164,10 +197,13 @@ The pipeline includes a conversational terminal assistant powered by `rich`. You
 ║                                                               ║
 ║   Automatically detect and fix data quality issues            ║
 ║   Powered by Grok (xAI) + Rule-based Fallback                 ║
+║   Type 'help' for commands or describe what you need!         ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 🔧 Pipeline Agent: hi dataset
 👋 Hello! I'm your Self-Healing Pipeline Agent!
+I can help you detect and fix data quality issues automatically.
+
 📂 Enter CSV file path: tests/fixtures/dirty_types.csv
 ✅ Loaded: tests/fixtures/dirty_types.csv (5 rows × 4 columns)
 
@@ -181,7 +217,12 @@ The pipeline includes a conversational terminal assistant powered by `rich`. You
   5          Eve             $75.00    2024-03-01
 
 🔧 Pipeline Agent: datapipeline
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 🔧 Running self-healing on dirty_types.csv                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
 🔄 Healing Attempt 1/3
+Type mismatch in 'amount': expected float, found 5 bad samples
                              🔍 Validation Errors
 ┌───────────────┬─────────────────────────────────────────────────────────────┐
 │ Type          │ Details                                                     │
@@ -190,22 +231,36 @@ The pipeline includes a conversational terminal assistant powered by `rich`. You
 │               │ ['$100.50', '$200.00', '$50.75', '$300.25', '$75.00']      │
 └───────────────┴─────────────────────────────────────────────────────────────┘
 
-🤖 Diagnosing...
-🩺 Root Cause: 'amount' contains formatted currency strings
+🤖 Diagnosing with Grok (xAI)...
+🩺 Root Cause: 'amount' contains formatted strings like ['$100.50', '$200.00']
+   Reasoning: Currency/formatting characters block numeric parsing.
+   Source: llm:grok-3
    Confidence: 85%
    Proposed Fix: {'action': 'cast_type', 'column': 'amount', 'type': 'float'}
 
+✅ Applied Fix: Cast column 'amount' to float
+──────────────────────────────────────────────────
 🔄 Healing Attempt 2/3
 ✅ All validations passed!
+
 📝 Pipeline Status: SUCCESS (1 fix applied)
-✨ Data Cleaned and Loaded into DuckDB Warehouse!
+✨ Data is clean! Here's a preview:
+
+          📊 Data Preview (Cleaned Data)
+  order_id   customer_name   amount   order_date
+ ────────────────────────────────────────────────
+  1          Alice           100.5    2024-01-15
+  2          Bob             200.0    2024-01-16
+  3          Charlie         50.75    2024-02-01
+  4          Diana           300.25   2024-02-14
+  5          Eve             75.0     2024-03-01
 ```
 
 ---
 
 ## 🛠️ Supported Self-Healing Actions
 
-| Action | Classification | Description | Automatic? |
+| Action | Classification | Description | Execution Policy |
 | :--- | :---: | :--- | :---: |
 | `rename_column` | `SAFE` | Maps renamed upstream column names back to expected schema definitions | ✅ Auto-applied |
 | `cast_type` | `SAFE` | Strips currency symbols (`$`, `€`), commas, whitespace, and casts to numeric/dates | ✅ Auto-applied |
@@ -233,65 +288,113 @@ The pipeline includes a conversational terminal assistant powered by `rich`. You
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Quick Setup
+
+Get up and running in under **2 minutes**.
 
 ### 1. Prerequisites
-- Python 3.10, 3.11, 3.12, or 3.13
-- Git
+- **Python**: Version 3.10, 3.11, 3.12, or 3.13 installed
+- **Git**: Installed and configured
 
-### 2. Installation
+---
+
+### 2. Installation & Virtual Environment
+
+#### On Windows (PowerShell):
 ```powershell
-# Clone the repository
+# 1. Clone repository
 git clone https://github.com/girish-indurkar/self-healing-data-pipeline.git
 cd self-healing-data-pipeline
 
-# Create and activate virtual environment
+# 2. Create and activate virtual environment
 python -m venv venv
-.\venv\Scripts\Activate.ps1    # On Windows PowerShell
-# source venv/bin/activate     # On Linux / macOS
+.\venv\Scripts\Activate.ps1
 
-# Install dependencies
+# 3. Install dependencies
 pip install -r requirements.txt
 pip install -e .
 ```
 
+#### On Linux / macOS (Bash / Zsh):
+```bash
+# 1. Clone repository
+git clone https://github.com/girish-indurkar/self-healing-data-pipeline.git
+cd self-healing-data-pipeline
+
+# 2. Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+pip install -e .
+```
+
+---
+
 ### 3. Configure Grok (xAI) API (Optional)
-The pipeline automatically uses a deterministic rule-based engine offline. To enable Grok LLM cognitive diagnosis:
+
+The pipeline functions out of the box using an embedded **deterministic rule engine** without needing any API key. To activate Grok's deep cognitive reasoning:
+
 ```powershell
 cp .env.example .env
-# Edit .env:
-# XAI_API_KEY=xai-your-api-key-here
-# GROK_MODEL=grok-3
 ```
 
-### 4. Run the Conversational Agent
+Edit `.env` with your key from [console.x.ai](https://console.x.ai/):
+```ini
+XAI_API_KEY=your-xai-key-here
+GROK_MODEL=grok-3
+```
+
+---
+
+### 4. Running the Project
+
+Choose your preferred interface:
+
+#### Option A: Conversational Terminal CLI
 ```powershell
 python -m self_healing_pipeline.interactive
+# Try typing: "hi dataset" -> "tests/fixtures/dirty_types.csv" -> "datapipeline"
 ```
 
-### 5. Launch the Web Dashboard
+#### Option B: Real-Time Streamlit Web Dashboard
 ```powershell
 streamlit run app.py
 ```
-Open **[http://localhost:8501](http://localhost:8501)** in your browser to simulate pipeline errors and trigger self-healing.
+Open **[http://localhost:8501](http://localhost:8501)** in your browser to simulate pipeline errors, inspect DuckDB records, and watch live self-healing.
 
-### 6. Run the Test Suite
+---
+
+### 5. Running Tests
+
+Verify all 31 unit, integration, and agent tests pass:
+
 ```powershell
+# Windows
 $env:PYTHONPATH="."
 pytest tests/ -v
+
+# Linux / macOS
+PYTHONPATH=. pytest tests/ -v
+```
+
+Expected output:
+```text
+============================= 31 passed in 4.15s ==============================
 ```
 
 ---
 
 ## 🐳 Docker Deployment
 
-Run the complete pipeline inside an isolated lightweight container:
+Run the containerized self-healing agent without installing Python locally:
 
 ```bash
 # Build the container
 docker build -t self-healing-pipeline .
 
-# Run the interactive agent
+# Run interactive session
 docker run -it --rm -e XAI_API_KEY="your-key" self-healing-pipeline
 ```
 
@@ -303,23 +406,23 @@ docker run -it --rm -e XAI_API_KEY="your-key" self-healing-pipeline
 self-healing-data-pipeline/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml              # Multi-Python CI/CD pipeline (Lint, Test, Docker)
-│       └── snake.yml           # Automated contribution snake animation generator
+│       ├── ci.yml              # CI/CD: Linting (Ruff), Multi-Python Tests (3.10-3.12)
+│       └── snake.yml           # Daily scheduled contribution snake generator
 ├── agent/
 │   ├── __init__.py             # Agent module interface
 │   └── diagnose.py             # Grok (xAI) LLM diagnosis with rule-based fallback
 ├── pipeline/
 │   ├── __init__.py             # Pipeline module exports
 │   ├── etl.py                  # DuckDB ingestion & PipelineError definitions
-│   ├── failure_injector.py     # Anomaly generator (renames, corruptions, duplicates)
-│   ├── generate_data.py        # Synthetic test dataset generator
+│   ├── failure_injector.py     # Upstream anomaly generator (corruptions, renames)
+│   ├── generate_data.py        # Synthetic dataset generator
 │   └── runner.py               # Main iterative self-healing execution loop
 ├── tests/
 │   ├── fixtures/               # Test datasets (clean, dirty types, duplicates, nulls)
 │   ├── conftest.py             # Pytest fixtures and environment configuration
 │   └── test_pipeline.py        # 31 unit & integration tests (100% pass rate)
 ├── .env.example                # Environment variables template
-├── .gitignore                  # Production Git ignore rules
+├── .gitignore                  # Git ignore rules for virtualenv, duckdb, and cache
 ├── Dockerfile                  # Container definition for containerized execution
 ├── requirements.txt            # Project dependencies manifest
 ├── setup.py                    # Package build and CLI entry points
@@ -343,7 +446,7 @@ self-healing-data-pipeline/
 
 ---
 
-## 📊 Live Repository Metrics & Contribution Snake
+## 🐍 Contribution Activity
 
 <div align="center">
 
@@ -353,18 +456,11 @@ self-healing-data-pipeline/
   <img alt="GitHub contribution snake animation" src="https://raw.githubusercontent.com/girish-indurkar/self-healing-data-pipeline/output/github-contribution-grid-snake.svg">
 </picture>
 
-<br/><br/>
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=girish-indurkar&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" alt="Girish's GitHub Stats" width="48%" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=girish-indurkar&layout=compact&theme=tokyonight&hide_border=true" alt="Top Languages" width="48%" />
-</p>
-
 </div>
 
 ---
 
-## ❓ FAQ
+## ❓ Frequently Asked Questions
 
 <details>
 <summary><strong>1. Does the pipeline require an active Grok (xAI) API key to run?</strong></summary>
@@ -382,6 +478,12 @@ Every proposed remediation is filtered through an action policy controller. Oper
 <summary><strong>3. Can I connect this to PostgreSQL, Snowflake, or BigQuery instead of DuckDB?</strong></summary>
 <br/>
 <strong>Yes.</strong> The validation and fix engines operate directly on <code>pandas.DataFrame</code> objects. Replacing the DuckDB connector in <code>pipeline/etl.py</code> with SQLAlchemy, Snowflake-connector, or BigQuery Client allows seamless integration into any warehouse architecture.
+</details>
+
+<details>
+<summary><strong>4. How does the conversational CLI handle unexpected prompts?</strong></summary>
+<br/>
+The CLI tokenizes user inputs and maps them to semantic intent clusters (e.g. greetings, loading, healing, inspection, help). If an unrecognized prompt is entered, it gracefully surfaces available commands with interactive tips rather than crashing.
 </details>
 
 ---
