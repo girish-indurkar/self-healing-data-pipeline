@@ -18,9 +18,6 @@
   <a href="https://github.com/girish-indurkar/self-healing-data-pipeline/actions/workflows/ci.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/girish-indurkar/self-healing-data-pipeline/ci.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI%2FCD&color=10B981" alt="CI/CD" />
   </a>
-  <a href="https://github.com/girish-indurkar/self-healing-data-pipeline/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/girish-indurkar/self-healing-data-pipeline?style=for-the-badge&color=6366F1" alt="License" />
-  </a>
   <a href="https://www.python.org/downloads/">
     <img src="https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
   </a>
@@ -60,7 +57,6 @@
 - [🔐 Environment Variables](#-environment-variables)
 - [🐍 Contribution Activity](#-contribution-activity)
 - [❓ Frequently Asked Questions](#-faq)
-- [📄 License](#-license)
 
 ---
 
@@ -384,6 +380,11 @@ Expected output:
  31 passed in 4.15s
 ```
 
+Expected output:
+```text
+============================= 31 passed in 4.15s ==============================
+```
+
 ---
 
 ## 🐳 Docker Deployment
@@ -486,11 +487,6 @@ Every proposed remediation is filtered through an action policy controller. Oper
 The CLI tokenizes user inputs and maps them to semantic intent clusters (e.g. greetings, loading, healing, inspection, help). If an unrecognized prompt is entered, it gracefully surfaces available commands with interactive tips rather than crashing.
 </details>
 
----
-
-## 📄 License
-
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
 
 ---
 
