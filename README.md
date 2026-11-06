@@ -32,9 +32,6 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="assets/demo.gif" alt="Self-Healing Pipeline Live Demo Animation" width="92%" style="border-radius: 10px;" />
-</p>
 
 </div>
 
